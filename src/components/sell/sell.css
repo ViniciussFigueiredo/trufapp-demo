@@ -1,0 +1,41 @@
+.icon{
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--blue-700);
+    border-radius: 50%
+}
+
+.buyer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+
+.buyer strong{
+    font-size: 0.87rem;
+    color:var(--black);
+}
+
+.buyer span{
+    font-size: 0.75rem;
+    color: #4d5c57
+}
+
+.value{
+    align-items:center
+}
+
+.value p{
+    font-size: 0.87rem;
+    color:var(--black);
+}
+
+.value small{
+    font-size: 0.75rem;
+    color:#4d5c57;
+}
+
+.value svg{
+    cursor:pointer
+}

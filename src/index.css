@@ -1,0 +1,34 @@
+:root {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  --white: #ffff;
+  --grey: #f8f9fa;
+  --black: #141C24;
+  --blue-700: #F0F6FF;
+  --blue-800: #1A75FF;
+  --blue-900: #002966;
+}
+
+:focus {
+  outline: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--grey);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+body, input, textarea, button, a{
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+}

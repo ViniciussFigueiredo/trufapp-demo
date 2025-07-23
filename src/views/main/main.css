@@ -1,0 +1,90 @@
+.main{
+    max-width: 100%;
+    flex-wrap:wrap;
+}
+
+.main .sales-information {
+    max-width: 462px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main .sales-information h1{
+    font-size: 1.25rem;
+    font-weight: 700
+}
+
+.main .sales-information p{
+    font-size: 0.87rem;
+}
+
+.main .sales-information fieldset legend {
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  color: var(--black);
+  margin-bottom: 0.5rem;    
+}
+
+.main .sales-information form {
+    background-color: var(--white);
+    border-radius: 1rem
+}
+
+.main .sales-information form input{
+    border-radius: 15px;
+    height: 3rem;
+    border:solid 1px var(--black)
+}
+
+.main .sales-information form button{
+    border: none;
+    height: 3rem;
+    background-color: var(--blue-800);
+    border-radius:20px;
+    color: var(--white)
+}
+
+.main .sales-list {
+  padding: 2.5rem 1rem;
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--white);
+  border-radius: 1rem;
+}
+
+.main .sales-list header div{
+  border-bottom: 1px solid #e4ece9;
+  padding-bottom: 0.50rem;
+  margin-bottom: 1.5rem;
+}
+
+.main .sales-list header p {
+  color: #4d5c57;
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.main .sales-list header p span {
+  color: #4d5c57;
+  font-weight: 400;
+  font-size: 0.87rem;
+}
+
+.main .sales-list header h2 {
+  font-size: 1rem;
+  color: var(--black);
+  font-weight: 700;
+}
+
+.main .sales-list ul {
+  padding: 0 1rem;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  max-height: 310px;
+  min-height: 310px;
+
+  overflow-y: scroll;
+}
