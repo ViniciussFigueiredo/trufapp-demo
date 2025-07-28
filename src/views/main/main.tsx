@@ -43,10 +43,10 @@ export const Main: React.FC = () => {
         return saved ? JSON.parse(saved) : { price1: 0, price2: 0 };
     });
 
-    const handleSavePrices = (prices: { price1: number; price2: number }) => {
+    /*const handleSavePrices = (prices: { price1: number; price2: number }) => {
         setPriceValues(prices);
         localStorage.setItem('priceValues', JSON.stringify(prices));
-    };
+    };*/
 
     const [filters, setFilters] = useState({
         status: [] as string[],
