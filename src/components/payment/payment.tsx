@@ -26,7 +26,7 @@ export function Payment({ onConfirm, onCancel }: PaymentProps) {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Forma de pagamento</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" onClick={onCancel} className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body d-flex align-items-center gap-3">
                         <button type="button" className={`d-flex align-items-center gap-2 ${method === 'Dinheiro' ? 'selected' : ''}`} onClick={() => setMethod('Dinheiro')}>

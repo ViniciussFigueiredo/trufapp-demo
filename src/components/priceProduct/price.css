@@ -1,0 +1,60 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1050;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-dialog {
+  background: white;
+  border-radius: 5px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.modal-body button{
+  padding: 8px 12px;
+  background-color: var(--white);
+  border-radius: 5px;
+  border: solid 1px var(--blue-800)
+}
+
+.modal-body fieldset legend {
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  color: var(--black);
+  margin-bottom: 0.5rem;    
+}
+
+.modal-body fieldset input {
+    border-radius: 10px;
+    padding: 0 5px;
+    height: 2rem;
+    border:solid 1px var(--black);
+    max-width: 100%
+}
+
+.modal-footer button{
+  border-radius:20px;
+}
+
+.selected {
+  background-color: var(--blue-700) !important;
+  color: var(--blue-800) !important;
+}
+
+.modal-footer .btn-blue{
+  color:var(--white);
+  background-color: var(--blue-800)
+}
+
+.modal-content {
+  padding: 20px;
+}

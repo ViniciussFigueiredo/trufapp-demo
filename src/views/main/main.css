@@ -36,12 +36,18 @@
     border:solid 1px var(--black)
 }
 
-.main .sales-information form button{
+.main .sales-information form .button-form {
     border: none;
     height: 3rem;
     background-color: var(--blue-800);
     border-radius:20px;
     color: var(--white)
+}
+
+.main .filter button {
+  border: solid 1px var(--blue-700);
+  background-color:var(--white);
+  border-radius: 5px
 }
 
 .main .sales-list {
