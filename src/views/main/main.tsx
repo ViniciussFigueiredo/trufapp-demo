@@ -8,7 +8,7 @@ import { Filter } from "../../components/filter/filter";
 
 
 export const Main: React.FC = () => {
-
+    const API_BASE = 'https://trufapp-backend-6km2.onrender.com'
 
     interface SellCardProps {
         _id?: string;
@@ -22,7 +22,7 @@ export const Main: React.FC = () => {
     useEffect(() => {
         const fetchSales = async () => {
             try {
-                const res = await fetch('http://localhost:3001/sales');
+                const res = await fetch(`${API_BASE}/sales`);
                 const data = await res.json();
                 setSales(data);
             } catch (err) {
@@ -119,7 +119,7 @@ export const Main: React.FC = () => {
         };
 
         try {
-            const res = await fetch('http://localhost:3001/sales', {
+            const res = await fetch(`${API_BASE}/sales`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(completedSale)
@@ -150,7 +150,7 @@ export const Main: React.FC = () => {
             const saleToDelete = sales[saleToDeleteIndex];
 
             try {
-                await fetch(`http://localhost:3001/sales/${saleToDelete._id}`, {
+                await fetch(`${API_BASE}/sales/${saleToDelete._id}`, {
                     method: 'DELETE'
                 });
 
@@ -188,7 +188,7 @@ export const Main: React.FC = () => {
 
     const fetchPrices = async () => {
         try {
-            const res = await fetch("http://localhost:3001/prices");
+            const res = await fetch(`${API_BASE}/prices`);
             const data = await res.json();
             setPriceValues({ price1: data.price1, price2: data.price2 });
             setPriceId(data._id);
@@ -284,7 +284,7 @@ export const Main: React.FC = () => {
 
                         if (priceId) {
                             try {
-                                const res = await fetch(`http://localhost:3001/prices/${priceId}`, {
+                                const res = await fetch(`https://trufapp-backend-6km2.onrender.com/prices/${priceId}`, {
                                     method: "PUT",
                                     headers: { "Content-Type": "application/json" },
                                     body: JSON.stringify(newPrices),
