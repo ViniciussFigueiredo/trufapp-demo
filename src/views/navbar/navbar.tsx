@@ -1,5 +1,6 @@
 import "./navbar.css"
 import Logo from "../../assets/logo.png"
+import { Link } from "react-router-dom";
 
 export function NavBar() {
     return (
@@ -21,7 +22,7 @@ export function NavBar() {
                                             <path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5" />
                                         </svg>
                                     </div>
-                                    <a aria-current="page" href="/">Início</a>
+                                    <Link aria-current="page" to="/">Início</Link>
                                 </li>
                                 <li className="d-flex d-lg-none gap-2">
                                     <div className="icon d-flex justify-content-center ">
@@ -31,7 +32,7 @@ export function NavBar() {
                                             <path d="M8 13.5a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11m0 .5A6 6 0 1 0 8 2a6 6 0 0 0 0 12" />
                                         </svg>
                                     </div>
-                                    <a aria-current="page" href="/vendas">Minhas Vendas</a>
+                                    <Link aria-current="page" to="/vendas">Minhas Vendas</Link>
                                 </li>
                                 <li className="d-flex gap-2">
                                     <div className="icon d-flex justify-content-center ">
