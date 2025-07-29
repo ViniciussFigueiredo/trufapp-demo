@@ -1,12 +1,22 @@
 import './payment.css'
 import { useState } from 'react'
 
+interface SellCardProps {
+    _id?: string;
+    name: string;
+    quantity: number;
+    value: number;
+    status: string;
+    paymentMethod: string;
+}
+
 interface PaymentProps {
+    sale: SellCardProps;
     onConfirm: (status: string, method: string) => void;
     onCancel: () => void;
 }
 
-export function Payment({ onConfirm, onCancel }: PaymentProps) {
+export function Payment({ onConfirm, onCancel, sale }: PaymentProps) {
 
     const [method, setMethod] = useState('');
     const [isPaid, setIsPaid] = useState(false);

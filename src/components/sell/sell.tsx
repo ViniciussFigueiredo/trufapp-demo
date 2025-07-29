@@ -8,13 +8,19 @@ interface SellCardProps {
     status: string;
     paymentMethod: string;
     onDelete: () => void;
+    onEdit: () => void;
 }
 
 export function SellCard(props: SellCardProps) {
-    const { name, value, quantity, status, paymentMethod, onDelete } = props;
+    const { name, value, quantity, status, paymentMethod, onDelete, onEdit } = props;
 
     return (
-        <li id={paymentMethod} className="sell-card w-100 d-flex justify-content-between align-items-center flex-nowrap">
+        <li id={paymentMethod}
+            className="sell-card w-100 d-flex justify-content-between align-items-center flex-nowrap"
+            onClick={() => {
+                if (status === 'pendente') onEdit();  // só abre modal se status pendente
+            }}
+            style={{ cursor: status === 'pendente' ? 'pointer' : 'default' }}>
             <div className="d-flex gap-2 flex-grow-1">
                 <div className="icon d-flex justify-content-center p-1">
                     <img src={Icon} className="img-fluid" alt="Responsive image"></img>

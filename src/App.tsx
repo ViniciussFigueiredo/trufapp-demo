@@ -1,13 +1,18 @@
 import './index.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Main } from './views/main/main'
 import { NavBar } from './views/navbar/navbar'
+import { MySales } from './views/mySell/mySell';
 
 function App() {
   return (
-    <div>
+    <Router>
       <NavBar />
-      <Main />
-    </div>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/vendas" element={<MySales />} />
+      </Routes>
+    </Router>
   )
 }
 
