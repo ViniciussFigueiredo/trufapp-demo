@@ -23,7 +23,7 @@ export function Month() {
 
   return (
     <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
-      <aside className="sales-list d-none d-lg-block w-100">
+      <aside className="sales-list w-100">
         <header className="px-3">
           <div className="d-flex justify-content-between align-items-center">
             <p>Minhas vendas mensais</p>
