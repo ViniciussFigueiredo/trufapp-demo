@@ -39,3 +39,9 @@
 .value svg{
     cursor:pointer
 }
+
+.sell-card button{
+    border:none;
+    background-color: var(--white);
+    text-align: left;
+}
