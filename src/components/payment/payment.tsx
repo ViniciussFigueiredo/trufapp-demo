@@ -16,7 +16,7 @@ interface PaymentProps {
     onCancel: () => void;
 }
 
-export function Payment({ onConfirm, onCancel, sale }: PaymentProps) {
+export function Payment({ onConfirm, onCancel }: PaymentProps) {
 
     const [method, setMethod] = useState('');
     const [isPaid, setIsPaid] = useState(false);
