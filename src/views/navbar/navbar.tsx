@@ -41,7 +41,7 @@ export function NavBar() {
                                             <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
                                         </svg>
                                     </div>
-                                    <a href="#">Mensal</a>
+                                    <Link to="/mensal">Vendas mensais</Link>
                                 </li>
                                 <li className="d-flex gap-2">
                                     <div className="icon d-flex justify-content-center ">
@@ -50,7 +50,7 @@ export function NavBar() {
                                             <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5zM10 8a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0zm-6 4a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0zm4-3a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0v-3a1 1 0 0 1 1-1" />
                                         </svg>
                                     </div>
-                                    <a href="#">Anual</a>
+                                    <Link to="/mensal">Vendas anuais</Link>
                                 </li>
                             </ul>
                         </div>

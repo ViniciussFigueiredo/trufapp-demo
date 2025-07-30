@@ -257,24 +257,16 @@ export const Main: React.FC = () => {
                     </button>
                 </form>
 
-                {showPayment && (
-                    <>
-                        {pendingSale && (
-                            <Payment
-                                sale={pendingSale}
-                                onConfirm={confirmPayment}
-                                onCancel={cancelPayment}
-                            />
-                        )}
-                        {editingSale && !pendingSale && (
-                            <Payment
-                                sale={editingSale}
-                                onConfirm={confirmPayment}
-                                onCancel={cancelPayment}
-                            />
-                        )}
-                    </>
+                {showPayment && (pendingSale || editingSale) && (
+                    <Payment
+                        onCancel={cancelPayment}
+                        onConfirm={confirmPayment}
+                        sale={(editingSale || pendingSale) as SellCardProps}
+                    />
                 )}
+
+
+
             </div>
 
             <aside className="sales-list d-none d-lg-block w-100">
