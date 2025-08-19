@@ -166,5 +166,3 @@ async function fecharMensal() {
     return { error: "Erro no fechamento mensal" };
   }
 }
-
-

@@ -227,7 +227,7 @@ export const Main: React.FC = () => {
             return date.toLocaleDateString("pt-BR", {
                 day: "2-digit",
                 month: "short",
-            }).toUpperCase(); 
+            }).toUpperCase();
         }
     };
 

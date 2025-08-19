@@ -18,7 +18,7 @@ export function SellCard(props: SellCardProps) {
         <li id={paymentMethod}
             className="sell-card mb-2 w-100 d-flex justify-content-between align-items-center flex-nowrap">
             <div onClick={onEdit}
-            style={{ cursor: status === 'pendente' ? 'pointer' : 'default' }} className="d-flex gap-2 flex-grow-1">
+                style={{ cursor: status === 'pendente' ? 'pointer' : 'default' }} className="d-flex gap-2 flex-grow-1">
                 <div className="icon d-flex justify-content-center p-1">
                     <img src={Icon} className="img-fluid" alt="Responsive image"></img>
                 </div>
