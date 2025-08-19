@@ -94,3 +94,12 @@
 
   overflow-y: scroll;
 }
+
+.main .filter input {
+  border-radius: 10px;
+  border: 1px solid black
+}
+
+.main .date-separator {
+  background-color: var(--blue-700);
+}

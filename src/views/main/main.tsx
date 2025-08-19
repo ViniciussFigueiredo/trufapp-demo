@@ -16,6 +16,7 @@ export const Main: React.FC = () => {
         value: number;
         status: string;
         paymentMethod: string;
+        date?: string; // 🔹 Novo campo de data
     }
 
     // ESTADOS GERAIS
@@ -42,6 +43,7 @@ export const Main: React.FC = () => {
         status: "",
     });
 
+    const [searchText, setSearchText] = useState("");
     const [saleToDeleteIndex, setSaleToDeleteIndex] = useState<number | null>(null);
     const [showWarning, setShowWarning] = useState(false);
     const [showPriceModal, setShowPriceModal] = useState(false);
@@ -79,15 +81,27 @@ export const Main: React.FC = () => {
         fetchPrices();
     }, []);
 
-    // Atualizar lista filtrada sempre que sales ou filtros mudarem
-    useEffect(() => {
-        const filtered = sales.filter((sale) => {
-            const matchStatus = filters.status.length === 0 || filters.status.includes(sale.status);
-            const matchMethod = filters.paymentMethods.length === 0 || filters.paymentMethods.includes(sale.paymentMethod);
-            return matchStatus && matchMethod;
+    // Função separada de filtragem
+    const applyFilters = () => {
+        return sales.filter((sale) => {
+            const matchStatus =
+                filters.status.length === 0 || filters.status.includes(sale.status);
+
+            const matchMethod =
+                filters.paymentMethods.length === 0 || filters.paymentMethods.includes(sale.paymentMethod);
+
+            const matchSearch =
+                searchText.trim() === "" ||
+                sale.name.toLowerCase().includes(searchText.toLowerCase());
+
+            return matchStatus && matchMethod && matchSearch;
         });
-        setFilteredSales(filtered);
-    }, [sales, filters]);
+    };
+
+    // Atualizar lista filtrada
+    useEffect(() => {
+        setFilteredSales(applyFilters());
+    }, [sales, filters, searchText]);
 
     // FORMULÁRIO
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,6 +128,7 @@ export const Main: React.FC = () => {
             value: result,
             status: "",
             paymentMethod: "",
+            date: new Date().toISOString(), // 🔹 Salvar data atual
         };
 
         setPendingSale(newSale);
@@ -123,7 +138,6 @@ export const Main: React.FC = () => {
     // CONFIRMAR PAGAMENTO (novo ou edição)
     const confirmPayment = async (status: string, method: string) => {
         if (editingSale) {
-            // Editar venda existente
             const updatedSale = { ...editingSale, status, paymentMethod: method };
 
             try {
@@ -140,7 +154,6 @@ export const Main: React.FC = () => {
             }
             setEditingSale(null);
         } else if (pendingSale) {
-            // Salvar nova venda
             const newSale = { ...pendingSale, status, paymentMethod: method };
             try {
                 const res = await fetch(`${API_BASE}/sales`, {
@@ -158,14 +171,12 @@ export const Main: React.FC = () => {
         setShowPayment(false);
     };
 
-    // Cancelar modal pagamento
     function cancelPayment(): void {
         setPendingSale(null);
         setEditingSale(null);
         setShowPayment(false);
     }
 
-    // Excluir venda
     const handleDeleteClick = (index: number) => {
         setSaleToDeleteIndex(index);
         setShowWarning(true);
@@ -195,14 +206,41 @@ export const Main: React.FC = () => {
         setShowWarning(false);
     };
 
-    // Abrir modal para editar venda (status e método pagamento)
     const handleEditSale = (sale: SellCardProps) => {
         setEditingSale(sale);
         setShowPayment(true);
     };
 
-    // Valor total das vendas
     const totalValue = sales.reduce((total, sale) => total + sale.value, 0);
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        if (date.toDateString() === today.toDateString()) {
+            return "Hoje";
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return "Ontem";
+        } else {
+            return date.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "short",
+            }).toUpperCase(); 
+        }
+    };
+
+    const groupSalesByDate = (sales: SellCardProps[]) => {
+        return sales.reduce((groups: { [key: string]: SellCardProps[] }, sale) => {
+            const dateKey = formatDate(sale.date || new Date().toISOString());
+            if (!groups[dateKey]) {
+                groups[dateKey] = [];
+            }
+            groups[dateKey].push(sale);
+            return groups;
+        }, {});
+    };
 
     return (
         <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
@@ -264,9 +302,6 @@ export const Main: React.FC = () => {
                         sale={(editingSale || pendingSale) as SellCardProps}
                     />
                 )}
-
-
-
             </div>
 
             <aside className="sales-list d-none d-lg-block w-100">
@@ -281,33 +316,41 @@ export const Main: React.FC = () => {
                         </h2>
                     </div>
                 </header>
-                <div className="filter d-flex align-content-center justify-content-end px-4 pb-2">
+                <div className="filter d-flex align-content-center justify-content-between px-4 pb-3">
+                    <input
+                        className="filter-text px-2"
+                        type="text"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        placeholder="Pesquisar cliente..."
+                    />
                     <button
                         type="button"
                         onClick={() => setShowFilterModal(true)}
                         className="d-flex gap-1 align-items-center p-1"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            fill="#1A75FF"
-                            className="bi bi-filter-left"
-                            viewBox="0 0 16 16"
-                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1A75FF" className="bi bi-filter-left" viewBox="0 0 16 16">
                             <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
                         </svg>
                         Filtrar
                     </button>
                 </div>
                 <ul className="w-100 d-flex flex-column">
-                    {filteredSales.map((sale, index) => (
-                        <SellCard
-                            key={sale._id}
-                            {...sale}
-                            onDelete={() => handleDeleteClick(index)}
-                            onEdit={() => handleEditSale(sale)}
-                        />
+                    {Object.entries(groupSalesByDate(filteredSales)).map(([date, salesGroup]) => (
+                        <li key={date}>
+                            <div className="date-separator mb-2 px-3 py-1 fw-bold">
+                                {date}
+                            </div>
+
+                            {salesGroup.map((sale, index) => (
+                                <SellCard
+                                    key={sale._id}
+                                    {...sale}
+                                    onDelete={() => handleDeleteClick(index)}
+                                    onEdit={() => handleEditSale(sale)}
+                                />
+                            ))}
+                        </li>
                     ))}
                 </ul>
             </aside>

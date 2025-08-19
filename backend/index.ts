@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
-import http from 'http';
 import { Sale } from './models/Sale';
 
 dotenv.config();
@@ -87,56 +86,85 @@ app.put('/prices/:id', async (req, res) => {
   res.json(updatedPrice);
 });
 
+app.get('/test-mensal', async (_, res) => {
+  try {
+    const result = await fecharMensal(); // agora a função retorna algo
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao executar fechamento mensal" });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
 
 // --- CRON: Executa todo dia 1º às 00:00 ---
 cron.schedule('0 0 1 * *', async () => {
   try {
+    console.log("⏳ Rodando rotina mensal...");
+
     const paidSales = await Sale.find({ status: 'Pago' });
 
-    if (paidSales.length === 0) return;
+    if (paidSales.length === 0) {
+      console.log("ℹ️ Nenhuma venda paga encontrada.");
+      return;
+    }
 
     const total = paidSales.reduce((acc, sale) => acc + sale.value, 0);
     const quantity = paidSales.reduce((acc, sale) => acc + sale.quantity, 0);
     const monthName = new Date().toLocaleString('pt-BR', { month: 'long' });
 
-    const postData = JSON.stringify({
+    // Salva diretamente no Mongo (sem http.request)
+    const report = new Mensal({
       total,
       quantity,
       month: monthName,
       date: new Date()
     });
+    await report.save();
 
-    const options = {
-      hostname: 'localhost',
-      port: PORT,
-      path: '/mensal',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(postData),
-      },
-    };
-
-    const req = http.request(options, (res) => {
-      res.setEncoding('utf8');
-      res.on('data', (chunk) => {
-        console.log(`✅ Resposta da API mensal: ${chunk}`);
-      });
-    });
-
-    req.on('error', (e) => {
-      console.error(`❌ Erro ao enviar para /mensal: ${e.message}`);
-    });
-
-    req.write(postData);
-    req.end();
-
+    // Remove vendas já consolidadas
     await Sale.deleteMany({ status: 'Pago' });
 
-    console.log('✅ Vendas pagas limpas e total enviado para o relatório mensal.');
+    console.log(`✅ Consolidado mensal (${monthName}) criado e vendas pagas removidas.`);
   } catch (error) {
     console.error('❌ Erro na rotina mensal:', error);
   }
+}, {
+  timezone: "America/Sao_Paulo"
 });
+
+// --- Função que consolida relatório mensal ---
+async function fecharMensal() {
+  try {
+    const paidSales = await Sale.find({ status: 'Pago' });
+
+    if (paidSales.length === 0) {
+      console.log("ℹ️ Nenhuma venda paga encontrada.");
+      return { message: "Nenhuma venda paga encontrada." };
+    }
+
+    const total = paidSales.reduce((acc, sale) => acc + sale.value, 0);
+    const quantity = paidSales.reduce((acc, sale) => acc + sale.quantity, 0);
+    const monthName = new Date().toLocaleString('pt-BR', { month: 'long' });
+
+    const report = new Mensal({
+      total,
+      quantity,
+      month: monthName,
+      date: new Date(),
+    });
+
+    await report.save();
+    await Sale.deleteMany({ status: "Pago" });
+
+    console.log(`✅ Consolidado mensal criado (${monthName}).`);
+    return { message: `Consolidado mensal criado (${monthName})`, report };
+  } catch (error) {
+    console.error("❌ Erro no fechamento mensal:", error);
+    return { error: "Erro no fechamento mensal" };
+  }
+}
+
+
