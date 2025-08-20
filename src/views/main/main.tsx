@@ -16,7 +16,7 @@ export const Main: React.FC = () => {
         value: number;
         status: string;
         paymentMethod: string;
-        date?: string; // 🔹 Novo campo de data
+        date?: string;
     }
 
     // ESTADOS GERAIS
@@ -162,7 +162,7 @@ export const Main: React.FC = () => {
                     body: JSON.stringify(newSale),
                 });
                 const data = await res.json();
-                setSales((prev) => [...prev, data]);
+                setSales((prev) => [data, ...prev]);
             } catch (err) {
                 console.error("Erro ao salvar venda:", err);
             }
@@ -213,34 +213,87 @@ export const Main: React.FC = () => {
 
     const totalValue = sales.reduce((total, sale) => total + sale.value, 0);
 
+    // formatDate com normalização
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
+
+        // Normaliza as datas
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const yesterday = new Date();
         yesterday.setDate(today.getDate() - 1);
+        yesterday.setHours(0, 0, 0, 0);
 
-        if (date.toDateString() === today.toDateString()) {
+        const saleDate = new Date(date);
+        saleDate.setHours(0, 0, 0, 0);
+
+        if (saleDate.getTime() === today.getTime()) {
             return "Hoje";
-        } else if (date.toDateString() === yesterday.toDateString()) {
+        } else if (saleDate.getTime() === yesterday.getTime()) {
             return "Ontem";
         } else {
-            return date.toLocaleDateString("pt-BR", {
+            return saleDate.toLocaleDateString("pt-BR", {
                 day: "2-digit",
                 month: "short",
             }).toUpperCase();
         }
     };
 
+ 
+    // groupSalesByDate com ordenação de dias e vendas
     const groupSalesByDate = (sales: SellCardProps[]) => {
-        return sales.reduce((groups: { [key: string]: SellCardProps[] }, sale) => {
+        // Ordena todas as vendas por data (mais recente primeiro)
+        const sorted = [...sales].sort(
+            (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+        );
+
+        // Agrupa por chave de data formatada
+        const groups = sorted.reduce((acc: { [key: string]: SellCardProps[] }, sale) => {
             const dateKey = formatDate(sale.date || new Date().toISOString());
-            if (!groups[dateKey]) {
-                groups[dateKey] = [];
+            if (!acc[dateKey]) {
+                acc[dateKey] = [];
             }
-            groups[dateKey].push(sale);
-            return groups;
+            acc[dateKey].push(sale);
+            return acc;
         }, {});
+
+        // Ordena os grupos de datas (mais recente primeiro)
+        const orderedGroups = Object.fromEntries(
+            Object.entries(groups).sort(([dateA], [dateB]) => {
+                // Converte "Hoje" e "Ontem" em datas comparáveis
+                const resolveDate = (label: string) => {
+                    if (label === "Hoje") {
+                        const d = new Date();
+                        d.setHours(0, 0, 0, 0);
+                        return d.getTime();
+                    } else if (label === "Ontem") {
+                        const d = new Date();
+                        d.setDate(d.getDate() - 1);
+                        d.setHours(0, 0, 0, 0);
+                        return d.getTime();
+                    } else {
+                        // Converte label tipo "18 AGO" para Date real
+                        const [day, month] = label.split(" ");
+                        const months: { [key: string]: number } = {
+                            JAN: 0, FEV: 1, MAR: 2, ABR: 3, MAI: 4, JUN: 5,
+                            JUL: 6, AGO: 7, SET: 8, OUT: 9, NOV: 10, DEZ: 11
+                        };
+                        const d = new Date();
+                        d.setMonth(months[month]);
+                        d.setDate(Number(day));
+                        d.setHours(0, 0, 0, 0);
+                        return d.getTime();
+                    }
+                };
+
+                return resolveDate(dateB) - resolveDate(dateA);
+            })
+        );
+
+        return orderedGroups;
     };
+
 
     return (
         <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">

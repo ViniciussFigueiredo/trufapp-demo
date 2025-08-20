@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "../../views/main/main.css";
 import { SellCard } from "../sell/sell";
 import { Warning } from "../warning/warning";
 
 interface Props {
-  sales: any[]; // lista completa de vendas
+  filteredSales: any[];
+  sales: any[];
   showFilterModal: boolean;
   setShowFilterModal: (val: boolean) => void;
   showWarning: boolean;
@@ -14,9 +15,49 @@ interface Props {
   cancelDelete: () => void;
   handleEditSale: (sale: any) => void;
   totalValue: number;
+  searchText: string;
+  setSearchText: (val: string) => void;
 }
 
+// 🔹 Função para formatar datas (igual Main)
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+
+  const saleDate = new Date(date);
+  saleDate.setHours(0, 0, 0, 0);
+
+  if (saleDate.getTime() === today.getTime()) return "Hoje";
+  if (saleDate.getTime() === yesterday.getTime()) return "Ontem";
+
+  return saleDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  }).toUpperCase();
+};
+
+// 🔹 Agrupar vendas por data
+const groupSalesByDate = (sales: any[]) => {
+  const sorted = [...sales].sort(
+    (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
+  );
+
+  return sorted.reduce((acc: { [key: string]: any[] }, sale) => {
+    const dateKey = formatDate(sale.date || new Date().toISOString());
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(sale);
+    return acc;
+  }, {});
+};
+
 export const SalesAside: React.FC<Props> = ({
+  filteredSales,
   sales,
   setShowFilterModal,
   showWarning,
@@ -26,109 +67,70 @@ export const SalesAside: React.FC<Props> = ({
   cancelDelete,
   handleEditSale,
   totalValue,
-}) => {
-  const [searchText, setSearchText] = useState("");
-  const [filteredSales, setFilteredSales] = useState(sales);
-
-  // FILTRO DE TEXTO
-  useEffect(() => {
-    const lowerSearch = searchText.toLowerCase();
-    setFilteredSales(
-      sales.filter((sale) =>
-        sale.name ? sale.name.toLowerCase().includes(lowerSearch) : false
-      )
-    );
-  }, [searchText, sales]);
-
-  // FORMATAÇÃO DE DATA
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString || new Date().toISOString());
-    if (isNaN(date.getTime())) return "Data inválida";
-
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
-
-    if (date.toDateString() === today.toDateString()) return "Hoje";
-    if (date.toDateString() === yesterday.toDateString()) return "Ontem";
-
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "short",
-    }).toUpperCase();
-  };
-
-  // AGRUPAMENTO POR DATA
-  const groupSalesByDate = (salesList: any[]) => {
-    return salesList.reduce((groups: { [key: string]: any[] }, sale) => {
-      const dateKey = formatDate(sale.date);
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(sale);
-      return groups;
-    }, {});
-  };
-
-  const groupedSales = groupSalesByDate(filteredSales);
-
-  return (
-    <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
-      <aside className="sales-list w-100">
-        {/* FILTRO DE TEXTO E BOTÃO DE FILTRO */}
-        <div className="filter d-flex align-content-center mb-2 justify-content-between px-4 pb-2">
-          <input
-            type="text"
-            placeholder="Pesquisar cliente..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="filter-text px-2"
-          />
-          <button
-            type="button"
-            onClick={() => setShowFilterModal(true)}
-            className="d-flex gap-1 align-items-center p-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="#1A75FF"
-              className="bi bi-filter-left"
-              viewBox="0 0 16 16"
-            >
-              <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
-            </svg>
-          </button>
+  searchText,
+  setSearchText,
+}) => (
+  <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
+    <aside className="sales-list w-100">
+      <header className="px-3">
+        <div className="d-flex justify-content-between align-items-center">
+          <p>
+            Minhas vendas - <span>{sales.length} vendas</span>
+          </p>
+          <h2>
+            <small>R$</small>
+            {totalValue.toFixed(2).replace(".", ",")}
+          </h2>
         </div>
+      </header>
 
-        {/* LISTA DE VENDAS AGRUPADAS */}
-        <ul className="w-100 d-flex flex-column">
-          {Object.entries(groupedSales).map(([date, salesGroup]) => (
-            <React.Fragment key={date}>
-              <div className="date-separator mb-2 px-3 py-1 fw-bold">{date}</div>
-              {salesGroup.map((sale) => {
-                const realIndex = sales.findIndex((s) => s._id === sale._id);
-                return (
-                  <SellCard
-                    key={sale._id}
-                    {...sale}
-                    onDelete={() => handleDeleteClick(realIndex)}
-                    onEdit={() => handleEditSale(sale)}
-                  />
-                );
-              })}
-            </React.Fragment>
-          ))}
-        </ul>
+      {/* 🔹 Campo de pesquisa + botão filtro */}
+      <div className="filter d-flex align-content-center justify-content-between px-4 pb-3">
+        <input
+          className="filter-text px-2"
+          type="text"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          placeholder="Pesquisar cliente..."
+        />
+        <button
+          type="button"
+          onClick={() => setShowFilterModal(true)}
+          className="d-flex gap-1 align-items-center p-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#1A75FF" className="bi bi-filter-left" viewBox="0 0 16 16">
+            <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+          </svg>
+        </button>
+      </div>
 
-        {/* WARNING DE EXCLUSÃO */}
-        {showWarning && saleToDeleteIndex !== null && (
-          <Warning
-            name={sales[saleToDeleteIndex].name}
-            onConfirm={confirmDelete}
-            onCancel={cancelDelete}
-          />
-        )}
-      </aside>
-    </section>
-  );
-};
+      {/* 🔹 Lista de vendas agrupadas por data */}
+      <ul className="w-100 d-flex flex-column">
+        {Object.entries(groupSalesByDate(filteredSales)).map(([date, salesGroup]) => (
+          <div key={date}>
+            <div className="date-separator mb-2 px-3 py-1 fw-bold">
+              {date}
+            </div>
+            {salesGroup.map((sale, index) => (
+              <SellCard
+                key={sale._id || index}
+                {...sale}
+                onDelete={() => handleDeleteClick(index)}
+                onEdit={() => handleEditSale(sale)}
+              />
+            ))}
+          </div>
+        ))}
+      </ul>
+
+
+      {showWarning && saleToDeleteIndex !== null && (
+        <Warning
+          name={sales[saleToDeleteIndex].name}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
+    </aside>
+  </section>
+);

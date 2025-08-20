@@ -129,6 +129,18 @@ export const MySales: React.FC = () => {
     0
   );
 
+  // dentro do MySales
+  const [searchText, setSearchText] = useState("");
+
+  // Atualiza a lista filtrada sempre que searchText ou sales mudarem
+  useEffect(() => {
+    const filtered = sales.filter((sale) =>
+      sale.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredSales(filtered);
+  }, [searchText, sales]);
+
+
   return (
     <>
       <SalesAside
@@ -143,6 +155,8 @@ export const MySales: React.FC = () => {
         cancelDelete={cancelDelete}
         handleEditSale={handleEditSale} // PASSA FUNÇÃO PARA ABRIR MODAL
         totalValue={totalValue}
+        searchText={searchText}            // 🔹 aqui
+        setSearchText={setSearchText}
       />
 
       {showFilterModal && (
