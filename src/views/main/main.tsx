@@ -213,85 +213,67 @@ export const Main: React.FC = () => {
 
     const totalValue = sales.reduce((total, sale) => total + sale.value, 0);
 
-    // formatDate com normalização
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-
-        // Normaliza as datas
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
-        yesterday.setHours(0, 0, 0, 0);
-
-        const saleDate = new Date(date);
-        saleDate.setHours(0, 0, 0, 0);
-
-        if (saleDate.getTime() === today.getTime()) {
-            return "Hoje";
-        } else if (saleDate.getTime() === yesterday.getTime()) {
-            return "Ontem";
-        } else {
-            return saleDate.toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "short",
-            }).toUpperCase();
+    // 👉 Pega a data a partir do ObjectId do Mongo se a venda não tiver "date"
+    const objectIdToDate = (id?: string) => {
+        if (!id) return null;
+        try {
+            const ts = parseInt(id.substring(0, 8), 16) * 1000; // segundos -> ms
+            return new Date(ts); // momento real da criação (UTC), exibido no fuso LOCAL
+        } catch {
+            return null;
         }
     };
 
- 
-    // groupSalesByDate com ordenação de dias e vendas
-    const groupSalesByDate = (sales: SellCardProps[]) => {
-        // Ordena todas as vendas por data (mais recente primeiro)
-        const sorted = [...sales].sort(
-            (a, b) => new Date(b.date || "").getTime() - new Date(a.date || "").getTime()
-        );
+    // 🔹 Gera chave yyyy-mm-dd SEM NUNCA usar "agora" como fallback
+    const getDateKeyFromSale = (sale: SellCardProps) => {
+        const base =
+            (sale.date ? new Date(sale.date) : objectIdToDate(sale._id)) || null;
 
-        // Agrupa por chave de data formatada
-        const groups = sorted.reduce((acc: { [key: string]: SellCardProps[] }, sale) => {
-            const dateKey = formatDate(sale.date || new Date().toISOString());
-            if (!acc[dateKey]) {
-                acc[dateKey] = [];
-            }
-            acc[dateKey].push(sale);
-            return acc;
-        }, {});
+        if (!base) return "NO_DATE";
 
-        // Ordena os grupos de datas (mais recente primeiro)
-        const orderedGroups = Object.fromEntries(
-            Object.entries(groups).sort(([dateA], [dateB]) => {
-                // Converte "Hoje" e "Ontem" em datas comparáveis
-                const resolveDate = (label: string) => {
-                    if (label === "Hoje") {
-                        const d = new Date();
-                        d.setHours(0, 0, 0, 0);
-                        return d.getTime();
-                    } else if (label === "Ontem") {
-                        const d = new Date();
-                        d.setDate(d.getDate() - 1);
-                        d.setHours(0, 0, 0, 0);
-                        return d.getTime();
-                    } else {
-                        // Converte label tipo "18 AGO" para Date real
-                        const [day, month] = label.split(" ");
-                        const months: { [key: string]: number } = {
-                            JAN: 0, FEV: 1, MAR: 2, ABR: 3, MAI: 4, JUN: 5,
-                            JUL: 6, AGO: 7, SET: 8, OUT: 9, NOV: 10, DEZ: 11
-                        };
-                        const d = new Date();
-                        d.setMonth(months[month]);
-                        d.setDate(Number(day));
-                        d.setHours(0, 0, 0, 0);
-                        return d.getTime();
-                    }
-                };
+        // normaliza para meia-noite LOCAL
+        const local = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+        const y = local.getFullYear();
+        const m = String(local.getMonth() + 1).padStart(2, "0");
+        const d = String(local.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    };
 
-                return resolveDate(dateB) - resolveDate(dateA);
-            })
-        );
+    // 🔹 Agrupa por chave de data real e devolve já ORDENADO (mais recente primeiro)
+    const groupSalesByDate = (items: SellCardProps[]) => {
+        const groups: Record<string, SellCardProps[]> = {};
+        for (const s of items) {
+            const key = getDateKeyFromSale(s);
+            (groups[key] ||= []).push(s);
+        }
 
-        return orderedGroups;
+        const keys = Object.keys(groups).sort((a, b) => {
+            if (a === "NO_DATE") return 1;
+            if (b === "NO_DATE") return -1;
+            return new Date(b).getTime() - new Date(a).getTime();
+        });
+
+        return keys.map((k) => [k, groups[k]] as const);
+    };
+
+    // 🔹 Rótulo "Hoje" / "Ontem" / data e trata "NO_DATE"
+    const renderDateLabel = (key: string) => {
+        if (key === "NO_DATE") return "SEM DATA";
+
+        const [year, month, day] = key.split("-").map(Number);
+        const saleDate = new Date(year, month - 1, day); // meia-noite LOCAL
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        if (saleDate.getTime() === today.getTime()) return "Hoje";
+        if (saleDate.getTime() === yesterday.getTime()) return "Ontem";
+
+        return saleDate
+            .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+            .toUpperCase();
     };
 
 
@@ -389,23 +371,35 @@ export const Main: React.FC = () => {
                     </button>
                 </div>
                 <ul className="w-100 d-flex flex-column">
-                    {Object.entries(groupSalesByDate(filteredSales)).map(([date, salesGroup]) => (
-                        <li key={date}>
+                    {groupSalesByDate(filteredSales).map(([key, salesGroup]) => (
+                        <li key={key}>
                             <div className="date-separator mb-2 px-3 py-1 fw-bold">
-                                {date}
+                                {renderDateLabel(key)}
                             </div>
 
-                            {salesGroup.map((sale, index) => (
+                            {salesGroup.map((sale) => (
                                 <SellCard
                                     key={sale._id}
                                     {...sale}
-                                    onDelete={() => handleDeleteClick(index)}
+                                    onDelete={() =>
+                                        handleDeleteClick(sales.findIndex((s) => s._id === sale._id))
+                                    }
                                     onEdit={() => handleEditSale(sale)}
                                 />
                             ))}
                         </li>
                     ))}
                 </ul>
+
+
+                <div className="close-month d-flex w-100 pt-2 px-4 justify-content-center">
+                    <button
+                        type="button"
+                        className="d-flex justify-content-center w-100 gap-1 align-items-center mt-4 py-2"
+                    >
+                        Fechar o mês
+                    </button>
+                </div>
             </aside>
 
             {showWarning && saleToDeleteIndex !== null && (

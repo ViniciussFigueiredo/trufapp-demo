@@ -8,7 +8,7 @@ export function NavBar() {
             <nav className="navbar navbar-expand-lg bg-white px-lg-5">
                 <div className="container-fluid d-flex">
                     <div className="pt-1">
-                        <a className="navbar-brand" href="#"><img className="img-fluid" src={Logo} alt="logo" /></a>
+                        <Link className="navbar-brand" aria-current="page" to="/"><img className="img-fluid" src={Logo} alt="logo" /></Link>
                     </div>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
