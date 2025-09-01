@@ -5,6 +5,7 @@ import { Warning } from "../../components/warning/warning";
 import { Payment } from "../../components/payment/payment";
 import { Price } from "../../components/priceProduct/price";
 import { Filter } from "../../components/filter/filter";
+import { ModalMonth } from "../../components/modalMonth/modalMonth";
 
 export const Main: React.FC = () => {
     const API_BASE = "https://trufapp-backend-6km2.onrender.com";
@@ -49,6 +50,8 @@ export const Main: React.FC = () => {
     const [showPriceModal, setShowPriceModal] = useState(false);
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
+    const [showCloseMonthModal, setShowCloseMonthModal] = useState(false);
+
 
     // Buscar vendas no backend
     useEffect(() => {
@@ -213,7 +216,7 @@ export const Main: React.FC = () => {
 
     const totalValue = sales.reduce((total, sale) => total + sale.value, 0);
 
-    // 👉 Pega a data a partir do ObjectId do Mongo se a venda não tiver "date"
+    // Pega a data a partir do ObjectId do Mongo se a venda não tiver "date"
     const objectIdToDate = (id?: string) => {
         if (!id) return null;
         try {
@@ -223,6 +226,18 @@ export const Main: React.FC = () => {
             return null;
         }
     };
+
+    const now = new Date();
+
+    // verifica se hoje é dia 1
+    const isFirstDay = now.getDate() === 1;
+
+    // se for dia 1, pega mês anterior, senão pega mês atual
+    const targetDate = isFirstDay
+        ? new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        : now;
+
+    const Month = targetDate.toLocaleString("default", { month: "long" });
 
     // 🔹 Gera chave yyyy-mm-dd SEM NUNCA usar "agora" como fallback
     const getDateKeyFromSale = (sale: SellCardProps) => {
@@ -274,6 +289,29 @@ export const Main: React.FC = () => {
         return saleDate
             .toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
             .toUpperCase();
+    };
+
+    // Fechamento do mes
+
+    const handleCloseMonth = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/fechar-mes`, { method: "POST" });
+            const data = await res.json();
+
+            if (data.report) {
+                alert(`✅ Mês fechado com sucesso (${data.report.month})`);
+
+                // Atualiza as vendas removendo as pagas
+                setSales((prev) => prev.filter((sale) => sale.status !== "Pago"));
+            } else {
+                alert(data.message || "Nenhuma venda paga encontrada.");
+            }
+        } catch (err) {
+            console.error("Erro ao fechar mês:", err);
+            alert("Erro ao fechar mês");
+        }
+
+        setShowCloseMonthModal(false);
     };
 
 
@@ -396,11 +434,21 @@ export const Main: React.FC = () => {
                     <button
                         type="button"
                         className="d-flex justify-content-center w-100 gap-1 align-items-center mt-4 py-2"
+                        onClick={() => setShowCloseMonthModal(true)}
                     >
                         Fechar o mês
                     </button>
                 </div>
             </aside>
+
+            {showCloseMonthModal && (
+
+                <ModalMonth
+                    onConfirm={handleCloseMonth}
+                    onCancel={() => setShowCloseMonthModal(false)}
+                    Salemonth={Month[0].toUpperCase() + Month.slice(1)}
+                />
+            )}
 
             {showWarning && saleToDeleteIndex !== null && (
                 <Warning

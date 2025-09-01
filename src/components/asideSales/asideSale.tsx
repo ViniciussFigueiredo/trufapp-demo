@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../views/main/main.css";
 import { SellCard } from "../sell/sell";
 import { Warning } from "../warning/warning";
+import { ModalMonth } from "../modalMonth/modalMonth";
 
 interface Props {
   filteredSales: any[];
@@ -14,10 +15,13 @@ interface Props {
   confirmDelete: () => void;
   cancelDelete: () => void;
   handleEditSale: (sale: any) => void;
+  handleCloseMonth: () => void;
+
   totalValue: number;
   searchText: string;
   setSearchText: (val: string) => void;
 }
+
 
 interface SellCardProps {
   _id?: string;
@@ -44,6 +48,10 @@ const objectIdToDate = (id?: string) => {
     return null;
   }
 };
+
+const date = new Date()
+const lastMonthDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+const Month = lastMonthDate.toLocaleString("default", { month: 'long' })
 
 // 🔹 Gera chave yyyy-mm-dd SEM NUNCA usar "agora" como fallback
 const getDateKeyFromSale = (sale: SellCardProps) => {
@@ -97,6 +105,8 @@ const renderDateLabel = (key: string) => {
     .toUpperCase();
 };
 
+
+
 export const SalesAside: React.FC<Props> = ({
   filteredSales,
   sales,
@@ -110,84 +120,101 @@ export const SalesAside: React.FC<Props> = ({
   totalValue,
   searchText,
   setSearchText,
-}) => (
-  <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
-    <aside className="sales-list w-100">
-      <header className="px-3">
-        <div className="d-flex justify-content-between align-items-center">
-          <p>
-            Minhas vendas - <span>{sales.length} vendas</span>
-          </p>
-          <h2>
-            <small>R$</small>
-            {totalValue.toFixed(2).replace(".", ",")}
-          </h2>
-        </div>
-      </header>
+  handleCloseMonth,
 
-      <div className="filter d-flex align-content-center justify-content-between px-4 pb-3">
-        <input
-          className="filter-text w-75 px-2"
-          type="text"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          placeholder="Pesquisar cliente..."
-        />
-        <button
-          type="button"
-          onClick={() => setShowFilterModal(true)}
-          className="d-flex gap-1 align-items-center p-1"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            fill="#1A75FF"
-            className="bi bi-filter-left"
-            viewBox="0 0 16 16"
+}) => {
+  const [showCloseMonthModal, setShowCloseMonthModal] = useState(false);
+
+
+  return (
+    <section className="main d-flex justify-content-around gap-5 gap-lg-0 pt-5 p-lg-5">
+      <aside className="sales-list w-100">
+        <header className="px-3">
+          <div className="d-flex justify-content-between align-items-center">
+            <p>
+              Minhas vendas - <span>{sales.length} vendas</span>
+            </p>
+            <h2>
+              <small>R$</small>
+              {totalValue.toFixed(2).replace(".", ",")}
+            </h2>
+          </div>
+        </header>
+
+        <div className="filter d-flex align-content-center justify-content-between px-4 pb-3">
+          <input
+            className="filter-text w-75 px-2"
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Pesquisar cliente..."
+          />
+          <button
+            type="button"
+            onClick={() => setShowFilterModal(true)}
+            className="d-flex gap-1 align-items-center p-1"
           >
-            <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
-          </svg>
-        </button>
-      </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="#1A75FF"
+              className="bi bi-filter-left"
+              viewBox="0 0 16 16"
+            >
+              <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+            </svg>
+          </button>
+        </div>
 
-      <ul className="w-100 d-flex flex-column">
-        {groupSalesByDate(filteredSales).map(([key, salesGroup]) => (
-          <li key={key}>
-            <div className="date-separator mb-2 px-3 py-1 fw-bold">
-              {renderDateLabel(key)}
-            </div>
+        <ul className="w-100 d-flex flex-column">
+          {groupSalesByDate(filteredSales).map(([key, salesGroup]) => (
+            <li key={key}>
+              <div className="date-separator mb-2 px-3 py-1 fw-bold">
+                {renderDateLabel(key)}
+              </div>
 
-            {salesGroup.map((sale) => (
-              <SellCard
-                key={sale._id}
-                {...sale}
-                onDelete={() =>
-                  handleDeleteClick(sales.findIndex((s) => s._id === sale._id))
-                }
-                onEdit={() => handleEditSale(sale)}
-              />
-            ))}
-          </li>
-        ))}
-      </ul>
+              {salesGroup.map((sale) => (
+                <SellCard
+                  key={sale._id}
+                  {...sale}
+                  onDelete={() =>
+                    handleDeleteClick(sales.findIndex((s) => s._id === sale._id))
+                  }
+                  onEdit={() => handleEditSale(sale)}
+                />
+              ))}
+            </li>
+          ))}
+        </ul>
 
-      <div className="close-month d-flex w-100 pt-2 px-4 justify-content-center">
-        <button
-          type="button"
-          className="d-flex justify-content-center w-100 gap-1 align-items-center mt-4 py-2"
-        >
-          Fechar o mês
-        </button>
-      </div>
+        <div className="close-month d-flex w-100 pt-2 px-4 justify-content-center">
+          <button
+            type="button"
+            className="d-flex justify-content-center w-100 gap-1 align-items-center mt-4 py-2"
+            onClick={() => setShowCloseMonthModal(true)}
+          >
+            Fechar o mês
+          </button>
+        </div>
 
-      {showWarning && saleToDeleteIndex !== null && (
-        <Warning
-          name={sales[saleToDeleteIndex].name}
-          onConfirm={confirmDelete}
-          onCancel={cancelDelete}
-        />
-      )}
-    </aside>
-  </section>
-);
+        {showWarning && saleToDeleteIndex !== null && (
+          <Warning
+            name={sales[saleToDeleteIndex].name}
+            onConfirm={confirmDelete}
+            onCancel={cancelDelete}
+          />
+        )}
+
+        {showCloseMonthModal && (
+
+          <ModalMonth
+            onConfirm={handleCloseMonth}
+            onCancel={() => setShowCloseMonthModal(false)}
+            Salemonth={Month[0].toUpperCase() + Month.slice(1)}
+          />
+        )}
+      </aside>
+    </section>
+  );
+}

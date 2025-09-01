@@ -140,6 +140,28 @@ export const MySales: React.FC = () => {
     setFilteredSales(filtered);
   }, [searchText, sales]);
 
+  const handleCloseMonth = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/fechar-mes`, { method: "POST" });
+      const data = await res.json();
+
+      if (data.report) {
+        alert(`✅ Mês fechado com sucesso (${data.report.month})`);
+
+        // Remove as vendas pagas da lista
+        setSales((prev) => prev.filter((sale) => sale.status !== "Pago"));
+        setFilteredSales((prev) =>
+          prev.filter((sale) => sale.status !== "Pago")
+        );
+      } else {
+        alert(data.message || "Nenhuma venda paga encontrada.");
+      }
+    } catch (err) {
+      console.error("Erro ao fechar mês:", err);
+      alert("Erro ao fechar mês");
+    }
+  };
+
 
   return (
     <>
@@ -153,10 +175,11 @@ export const MySales: React.FC = () => {
         handleDeleteClick={handleDeleteClick}
         confirmDelete={confirmDelete}
         cancelDelete={cancelDelete}
-        handleEditSale={handleEditSale} // PASSA FUNÇÃO PARA ABRIR MODAL
+        handleEditSale={handleEditSale}
         totalValue={totalValue}
-        searchText={searchText}            // 🔹 aqui
+        searchText={searchText}
         setSearchText={setSearchText}
+        handleCloseMonth={handleCloseMonth}
       />
 
       {showFilterModal && (
@@ -186,6 +209,8 @@ export const MySales: React.FC = () => {
           onCancel={cancelPayment}
         />
       )}
+
+
     </>
   );
 };

@@ -7,6 +7,7 @@ interface SelesMonthProps {
     total: number;
 }
 
+
 export function SelesMonth(props: SelesMonthProps) {
     const { month, total, quantity,} = props
 
