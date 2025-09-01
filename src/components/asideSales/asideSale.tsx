@@ -49,9 +49,18 @@ const objectIdToDate = (id?: string) => {
   }
 };
 
-const date = new Date()
-const lastMonthDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-const Month = lastMonthDate.toLocaleString("default", { month: 'long' })
+const now = new Date();
+
+// verifica se hoje é dia 1
+const isFirstDay = now.getDate() === 1;
+
+// se for dia 1, pega mês anterior, senão pega mês atual
+const targetDate = isFirstDay
+  ? new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  : now;
+
+const Month = targetDate.toLocaleString("default", { month: "long" });
+
 
 // 🔹 Gera chave yyyy-mm-dd SEM NUNCA usar "agora" como fallback
 const getDateKeyFromSale = (sale: SellCardProps) => {
