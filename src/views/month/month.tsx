@@ -26,7 +26,7 @@ export function Month() {
 
   useEffect(() => {
     async function fetchMensal() {
-      const res = await axios.get("https://trufapp-backend-6km2.onrender.com");
+      const res = await axios.get("https://trufapp-backend-6km2.onrender.com/mensal");
       setMonths(res.data);
     }
 
