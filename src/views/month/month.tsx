@@ -45,7 +45,7 @@ export function Month() {
           {months.map((item, index) => (
             <SelesMonth
               key={index}
-              month={MonthNow[0].toUpperCase() + MonthNow.slice(1)}
+              month={item.month[0].toUpperCase() + item.month.slice(1)}
               quantity={item.quantity}
               total={item.total}
             />
