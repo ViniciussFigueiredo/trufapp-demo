@@ -26,7 +26,7 @@ export function Month() {
 
   useEffect(() => {
     async function fetchMensal() {
-      const res = await axios.get("https://trufapp-backend-6km2.onrender.com/mensal");
+      const res = await axios.get("https://trufapp-backend-6km2.onrender.com");
       setMonths(res.data);
     }
 
@@ -45,7 +45,7 @@ export function Month() {
           {months.map((item, index) => (
             <SelesMonth
               key={index}
-              month={MonthNow}
+              month={MonthNow[0].toUpperCase() + MonthNow.slice(1)}
               quantity={item.quantity}
               total={item.total}
             />

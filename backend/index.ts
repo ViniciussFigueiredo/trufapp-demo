@@ -59,6 +59,16 @@ app.delete('/sales/:id', async (req, res) => {
 });
 
 // Relatório mensal
+app.post('/fechar-mes', async (_, res) => {
+  try {
+    const result = await fecharMensal();
+    res.json(result);
+  } catch (err) {
+    console.error("❌ Erro ao fechar mês:", err);
+    res.status(500).json({ error: "Erro ao fechar mês" });
+  }
+});
+
 app.post('/mensal', async (req, res) => {
   const { total, date, quantity, month } = req.body;
   const report = new Mensal({ total, date, quantity, month });
