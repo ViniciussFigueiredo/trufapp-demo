@@ -78,8 +78,16 @@ app.post('/mensal', async (req, res) => {
 
 app.get('/mensal', async (_, res) => {
   const reports = await Mensal.find().sort({ date: -1 });
-  res.json(reports);
+
+  const formatted = reports.map(r => ({
+    month: r.month,     // sempre pega do banco
+    quantity: r.quantity,
+    total: r.total,
+  }));
+
+  res.json(formatted);
 });
+
 
 // Preços
 app.get('/prices', async (_, res) => {
