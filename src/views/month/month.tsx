@@ -9,17 +9,6 @@ interface MonthData {
   total: number;
 }
 
-const now = new Date();
-
-// verifica se hoje é dia 1
-const isFirstDay = now.getDate() === 1;
-
-// se for dia 1, pega mês anterior, senão pega mês atual
-const targetDate = isFirstDay
-  ? new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  : now;
-
-const MonthNow = targetDate.toLocaleString("default", { month: "long" });
 
 export function Month() {
   const [months, setMonths] = useState<MonthData[]>([]);
@@ -45,7 +34,7 @@ export function Month() {
           {months.map((item, index) => (
             <SelesMonth
               key={index}
-              month={MonthNow[0].toUpperCase() + MonthNow.slice(1)}
+              month={item.month[0].toUpperCase() + item.month.slice(1)}
               quantity={item.quantity}
               total={item.total}
             />
