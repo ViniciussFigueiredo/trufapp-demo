@@ -15,7 +15,7 @@ interface Sale {
 }
 
 export const MySales: React.FC = () => {
-  const API_BASE = "https://trufapp-backend-6km2.onrender.com";
+  const API_BASE = "https://trufapp-demo.onrender.com";
 
   const [sales, setSales] = useState<Sale[]>([]);
   const [filteredSales, setFilteredSales] = useState<Sale[]>([]);
