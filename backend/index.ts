@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
-import { Sale } from './models/Sale';
+import { Sale } from './models/Sale.js';
 
 dotenv.config();
 
