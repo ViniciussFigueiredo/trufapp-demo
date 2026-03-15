@@ -1,5 +1,5 @@
 import "./navbar.css"
-import Logo from "../../assets/logo.png"
+import Logo from "../../assets/truficon.png"
 import { Link } from "react-router-dom";
 
 export function NavBar() {
