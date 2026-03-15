@@ -8,7 +8,7 @@ import { Filter } from "../../components/filter/filter";
 import { ModalMonth } from "../../components/modalMonth/modalMonth";
 
 export const Main: React.FC = () => {
-    const API_BASE = "https://trufapp-backend-6km2.onrender.com";
+    const API_BASE = "https://trufapp-demo.onrender.com";
 
     interface SellCardProps {
         _id?: string;
