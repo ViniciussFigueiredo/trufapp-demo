@@ -1,3 +1,4 @@
+
 # 🍫 TrufApp
 
 > Sistema Full Stack para controle de vendas e lucros de pequenos negócios.
@@ -9,6 +10,7 @@ O **TrufApp** foi desenvolvido para facilitar o controle de vendas de trufas, pe
 O sistema calcula automaticamente os valores das vendas e organiza os resultados para acompanhamento diário e mensal.
 
 O projeto nasceu de uma necessidade real e foi desenvolvido como uma aplicação própria a partir de conhecimentos adquiridos durante meus estudos.
+
 
 ## ✨ Funcionalidades
 
