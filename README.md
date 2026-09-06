@@ -1,69 +1,78 @@
-# React + TypeScript + Vite
+# 🍫 TrufApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Sistema Full Stack para controle de vendas e lucros de pequenos negócios.
 
-Currently, two official plugins are available:
+## 📖 Sobre o projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O **TrufApp** foi desenvolvido para facilitar o controle de vendas de trufas, permitindo registrar clientes, produtos, quantidades e valores.
 
-## Expanding the ESLint configuration
+O sistema calcula automaticamente os valores das vendas e organiza os resultados para acompanhamento diário e mensal.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+O projeto nasceu de uma necessidade real e foi desenvolvido como uma aplicação própria a partir de conhecimentos adquiridos durante meus estudos.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ✨ Funcionalidades
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- 🛒 Cadastro e gerenciamento de vendas
+- 👤 Registro de clientes
+- 💰 Controle de preços
+- 📊 Relatórios mensais
+- 🔄 Fechamento automático do mês
+- 📱 Interface responsiva
+- 💾 Persistência dos dados no MongoDB
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠️ Tecnologias
+
+### Front-end
+- React
+- TypeScript
+- Vite
+- React Router
+- Axios
+- Bootstrap
+
+### Back-end
+- Node.js
+- Express
+- TypeScript
+- Mongoose
+- MongoDB Atlas
+- Node Cron
+
+### Deploy
+- Render
+
+## 🧩 Estrutura
+
+```Plaintext
+trufapp-demo/
+│
+├── backend/
+│   ├── models/
+│   ├── routes/
+│   ├── index.ts
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── public/
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── views/
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+│
+├── .gitignore
+├── index.html
+├── package.json
+├── package-lock.json
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## ✒️ Autor
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Desenvolvido por **Vinícius Santos Figueiredo**.
