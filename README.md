@@ -1,3 +1,6 @@
+[PROJECT__BADGE]: https://img.shields.io/badge/📱Visitar_o_projeto-000?style=for-the-badge&logo=project
+[PROJECT__URL]: https://trufapp-front-demo.onrender.com/
+
 
 # 🍫 TrufApp
 
@@ -10,6 +13,8 @@ O **TrufApp** foi desenvolvido para facilitar o controle de vendas de trufas, pe
 O sistema calcula automaticamente os valores das vendas e organiza os resultados para acompanhamento diário e mensal.
 
 O projeto nasceu de uma necessidade real e foi desenvolvido como uma aplicação própria a partir de conhecimentos adquiridos durante meus estudos.
+
+[![project][PROJECT__BADGE]][PROJECT__URL]
 
 
 ## ✨ Funcionalidades
